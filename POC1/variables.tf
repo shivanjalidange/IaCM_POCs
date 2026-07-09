@@ -17,5 +17,7 @@ variable "tags" {
   default     = {
     Environment = "Dev"
     ManagedBy   = "Harness"
+    Owner = "Shivanjali"
+    Harness_Project = "Shivanjali_Playground"
   }
 }
