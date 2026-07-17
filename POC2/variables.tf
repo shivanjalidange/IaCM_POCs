@@ -36,3 +36,9 @@ variable "owner" {
     type = string
     default = "Shivanjali"
 }
+
+variable "type" {
+    description = "Type"
+    type = string
+    default = "Azure Storage Resource"
+}
