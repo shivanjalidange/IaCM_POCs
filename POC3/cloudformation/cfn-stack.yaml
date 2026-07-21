@@ -24,12 +24,12 @@ Resources:
   AppS3Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub "${BucketPrefix}-${EnvironmentName}-${AWS::AccountId}"
+      BucketName: !Sub "${BucketPrefix}-${EnvironmentName}-${AWS::Region}-${AWS::AccountId}"
       Tags:
         - Key: Environment
           Value: !Ref EnvironmentName
         - Key: Source
-          Value: CloudFormation
+          Value: CloudFormation-POC3
 
   # Resource 2: IAM Role
   LambdaExecutionRole:
