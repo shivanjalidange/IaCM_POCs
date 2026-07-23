@@ -1,78 +1,82 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'IaCM PoC 3 - CloudFormation Stack to be Migrated to Harness IaCM'
+Description: IaCM PoC 3 - Network Infrastructure for Migration
 
 Parameters:
   EnvironmentName:
     Type: String
     Default: dev
-    Description: Environment name prefix.
-  BucketPrefix:
-    Type: String
-    Default: iacm-cfn-migrated
-    Description: Prefix for the S3 bucket.
-  RoleNameParam:
-    Type: String
-    Default: IaCM-CFN-Migration-Role
-    Description: Name of the IAM Role.
-  PolicyNameParam:
-    Type: String
-    Default: IaCM-CFN-Migration-Policy
-    Description: Name of the IAM Policy.
 
 Resources:
-  # Resource 1: S3 Bucket
-  AppS3Bucket:
-    Type: AWS::S3::Bucket
+
+  # -----------------------------
+  # VPC
+  # -----------------------------
+  IaCMVPC:
+    Type: AWS::EC2::VPC
     Properties:
-      BucketName: !Sub "${BucketPrefix}-${EnvironmentName}-${AWS::Region}-${AWS::AccountId}"
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
       Tags:
+        - Key: Name
+          Value: IaCM-Migration-VPC
         - Key: Environment
           Value: !Ref EnvironmentName
         - Key: Source
           Value: CloudFormation-POC3
 
-  # Resource 2: IAM Role
-  LambdaExecutionRole:
-    Type: AWS::IAM::Role
+  # -----------------------------
+  # Public Subnet
+  # -----------------------------
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
     Properties:
-      RoleName: !Ref RoleNameParam
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: lambda.amazonaws.com
-            Action: sts:AssumeRole
+      VpcId: !Ref IaCMVPC
+      CidrBlock: 10.0.1.0/24
+      MapPublicIpOnLaunch: true
+      AvailabilityZone: !Select [0, !GetAZs ""]
       Tags:
+        - Key: Name
+          Value: IaCM-Public-Subnet
         - Key: Environment
           Value: !Ref EnvironmentName
 
-  # Resource 3: IAM Policy
-  S3AccessPolicy:
-    Type: AWS::IAM::Policy
-    S3AccessPolicy:
-      Type: AWS::IAM::Policy 
-      DependsOn: LambdaExecutionRole
-      Properties:
-        PolicyName: !Ref PolicyNameParam
-        Roles:
-          - !Ref LambdaExecutionRole
-        PolicyDocument:
-          Version: '2012-10-17'
-          Statement:
-            - Effect: Allow
-              Action:
-                - s3:GetObject
-                - s3:PutObject
-              Resource: !Sub "${AppS3Bucket.Arn}/*"
+  # -----------------------------
+  # Security Group
+  # -----------------------------
+  WebSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security Group for migrated infrastructure
+      VpcId: !Ref IaCMVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: IaCM-Web-SG
+        - Key: Environment
+          Value: !Ref EnvironmentName
 
 Outputs:
-  BucketNameOutput:
-    Description: "Created S3 Bucket Name"
-    Value: !Ref AppS3Bucket
-  BucketArnOutput:
-    Description: "S3 Bucket ARN"
-    Value: !GetAtt AppS3Bucket.Arn
-  RoleArnOutput:
-    Description: "IAM Role ARN"
-    Value: !GetAtt LambdaExecutionRole.Arn
+
+  VPCId:
+    Description: VPC ID
+    Value: !Ref IaCMVPC
+
+  SubnetId:
+    Description: Public Subnet ID
+    Value: !Ref PublicSubnet
+
+  SecurityGroupId:
+    Description: Security Group ID
+    Value: !Ref WebSecurityGroup
