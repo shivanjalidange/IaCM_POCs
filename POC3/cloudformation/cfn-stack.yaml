@@ -50,18 +50,21 @@ Resources:
   # Resource 3: IAM Policy
   S3AccessPolicy:
     Type: AWS::IAM::Policy
-    Properties:
-      PolicyName: !Ref PolicyNameParam
-      Roles:
-        - !Ref LambdaExecutionRole
-      PolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Action:
-              - s3:GetObject
-              - s3:PutObject
-            Resource: !Sub "${AppS3Bucket.Arn}/*"
+    S3AccessPolicy:
+      Type: AWS::IAM::Policy 
+      DependsOn: LambdaExecutionRole
+      Properties:
+        PolicyName: !Ref PolicyNameParam
+        Roles:
+          - !Ref LambdaExecutionRole
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - s3:GetObject
+                - s3:PutObject
+              Resource: !Sub "${AppS3Bucket.Arn}/*"
 
 Outputs:
   BucketNameOutput:
