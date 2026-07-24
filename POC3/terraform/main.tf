@@ -1,11 +1,63 @@
+# -----------------------------
+# VPC
+# -----------------------------
 resource "aws_vpc" "main" {
-  cidr_block           = "10.0.0.0/16"
-  enable_dns_support   = true
-  enable_dns_hostnames = true
+  cidr_block           = "10.0.0.0/16"
+  enable_dns_support   = true
+  enable_dns_hostnames = true
 
-  tags = {
-    Name        = "IaCM-Migration-VPC"
-    Environment = var.environment
-    Source      = "CloudFormation-POC3"
-  }
+  tags = {
+    Name        = "IaCM-Migration-VPC"
+    Environment = var.environment
+    Source      = "CloudFormation-POC3"
+  }
+}
+
+# -----------------------------
+# Public Subnet
+# -----------------------------
+resource "aws_subnet" "public" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = "10.0.1.0/24"
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name        = "IaCM-Public-Subnet"
+    Environment = var.environment
+  }
+}
+
+# -----------------------------
+# Security Group
+# -----------------------------
+resource "aws_security_group" "web" {
+  name        = "IaCM-Web-SG"
+  description = "Security Group for migrated infrastructure"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name        = "IaCM-Web-SG"
+    Environment = var.environment
+  }
 }
