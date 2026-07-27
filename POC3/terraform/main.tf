@@ -31,8 +31,8 @@ resource "aws_subnet" "public" {
 # Security Group
 # -----------------------------
 resource "aws_security_group" "web" {
-  name        = "IaCM-Web-SG"
-  description = "Security Group for migrated infrastructure"
+  name        = "iacm-network-poc-3-WebSecurityGroup-LFnWENqlsHcb"
+  description = "Enable SSH and HTTP access"
   vpc_id      = aws_vpc.main.id
 
   ingress {
