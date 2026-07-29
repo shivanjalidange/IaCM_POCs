@@ -31,9 +31,9 @@ resource "aws_subnet" "public" {
 # Security Group
 # -----------------------------
 resource "aws_security_group" "web" {
-  name        = "iacm-network-poc-3-WebSecurityGroup-LFnWENqlsHcb"
+  name = "shiva-iacm-poc3-stack-WebSecurityGroup-h3LZa8VFBHed"
   description = "Enable SSH and HTTP access"
-  vpc_id      = aws_vpc.main.id
+  vpc_id = aws_vpc.main.id
 
   ingress {
     from_port   = 22

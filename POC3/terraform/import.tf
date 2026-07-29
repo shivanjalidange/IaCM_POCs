@@ -1,6 +1,6 @@
 import {
   to = aws_vpc.main
-  id = "vpc-0b83ef2580e3f332" 
+  id = "vpc-0b83ef2580e3f332"
 }
 
 import {
