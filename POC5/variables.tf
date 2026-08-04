@@ -42,3 +42,9 @@ variable "type" {
     type = string
     default = "Azure Storage Resource"
 }
+
+variable "cost_center" {
+  description = "Cost Center"
+  type  = string
+  default   = "Engineering"
+}
