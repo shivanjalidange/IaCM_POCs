@@ -22,7 +22,7 @@ variable "account_tier" {
 variable "account_replication_type" {
   description = "Replication Type"
   type = string
-  default = "LRS"
+  default = "GRS"
 }
 
 variable "environment" {
