@@ -1,0 +1,82 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: IaCM PoC 3 - Network Infrastructure for Migration
+
+Parameters:
+  EnvironmentName:
+    Type: String
+    Default: dev
+
+Resources:
+
+  # -----------------------------
+  # VPC
+  # -----------------------------
+  IaCMVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: IaCM-Migration-VPC
+        - Key: Environment
+          Value: !Ref EnvironmentName
+        - Key: Source
+          Value: CloudFormation-POC3
+
+  # -----------------------------
+  # Public Subnet
+  # -----------------------------
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref IaCMVPC
+      CidrBlock: 10.0.1.0/24
+      MapPublicIpOnLaunch: true
+      AvailabilityZone: !Select [0, !GetAZs ""]
+      Tags:
+        - Key: Name
+          Value: IaCM-Public-Subnet
+        - Key: Environment
+          Value: !Ref EnvironmentName
+
+  # -----------------------------
+  # Security Group
+  # -----------------------------
+  WebSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security Group for migrated infrastructure
+      VpcId: !Ref IaCMVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: IaCM-Web-SG
+        - Key: Environment
+          Value: !Ref EnvironmentName
+
+Outputs:
+
+  VPCId:
+    Description: VPC ID
+    Value: !Ref IaCMVPC
+
+  SubnetId:
+    Description: Public Subnet ID
+    Value: !Ref PublicSubnet
+
+  SecurityGroupId:
+    Description: Security Group ID
+    Value: !Ref WebSecurityGroup
