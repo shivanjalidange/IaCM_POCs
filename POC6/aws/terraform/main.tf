@@ -27,6 +27,9 @@ resource "aws_subnet" "public" {
   tags = {
     Name        = "IaCM-Public-Subnet"
     Environment = var.environment
+    Owner       = var.owner
+    Managed-By  = "Harness"
+    Cost-Center = var.cost_center
   }
 }
 
@@ -62,5 +65,8 @@ resource "aws_security_group" "web" {
   tags = {
     Name        = "IaCM-Web-SG"
     Environment = var.environment
+    Owner       = var.owner
+    Managed-By  = "Harness"
+    Cost-Center = var.cost_center
   }
 }
