@@ -10,6 +10,8 @@ resource "azurerm_storage_account" "res-0" {
   tags = {
     Environment = var.environment
     Owner       = var.owner
-    Type = var.type
+    Type        = var.type
+    Managed-By  = "Harness"
+    Cost-Center = var.cost_center
    }
 }

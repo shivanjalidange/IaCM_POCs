@@ -37,6 +37,12 @@ variable "owner" {
     default = "Shivanjali"
 }
 
+variable "cost_center" {
+    description = "Cost Center"
+    type = string
+    default = "Engineering"
+}
+
 variable "type" {
     description = "Type"
     type = string

@@ -10,6 +10,9 @@ resource "aws_vpc" "main" {
     Name        = "IaCM-Migration-VPC"
     Environment = var.environment
     Source      = "CloudFormation-POC3"
+    Owner       = var.owner
+    Managed-By  = "Harness"
+    Cost-Center = var.cost_center
   }
 }
 
